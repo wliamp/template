@@ -1,0 +1,39 @@
+name: Initial Service
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Select Scope"
+        required: true
+        type: choice
+        default: banking
+        options:
+          - banking
+          - clearing-settlement
+          - compliance-regulatory
+          - fraud-risk
+          - payment
+          - shopping
+      service:
+        description: "Enter Service name"
+        required: true
+
+jobs:
+  init-service:
+    runs-on: ubuntu-latest
+    steps:
+      - run: git clone --depth=1 git@github.com:wliamp/java.git ${{ runner.temp }}/java
+
+      - run: |
+          bash $GITHUB_WORKSPACE/.shell/init-service
+        env:
+          SCOPE: ${{ github.event.inputs.scope }}
+          SERVICE: ${{ github.event.inputs.service }}
+          TEMP: ${{ runner.temp }}/java
+
+      - uses: ./.github/actions/init-service
+        with:
+          scope: ${{ github.event.inputs.scope }}
+          service: ${{ github.event.inputs.service }}
+          key: ${{ secrets.JAVA_DK }}

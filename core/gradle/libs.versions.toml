@@ -1,0 +1,5 @@
+[versions]
+tag = '0.0.0'
+
+[libraries]
+starter = { module = 'org.hamsaqua:<module>-core', version.ref = 'tag' }
