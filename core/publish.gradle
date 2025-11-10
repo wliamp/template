@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'org.hamsaqua'
-version = getenv("VERSION") ?: "SNAPSHOT"
+version = getenv("VERSION") ?: ""
 
 publishing {
     publications {
@@ -14,7 +14,7 @@ publishing {
             artifactId = "<module>"
             pom {
                 name.set("<module>")
-                description.set("Internal <MODULE> Core Logic")
+                description.set("Business Domain Core Logic")
                 url.set("https://github.com/hamsaqua/<module>")
             }
         }

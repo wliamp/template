@@ -10,8 +10,7 @@ jobs:
           fetch-depth: 1
       - uses: hamsaqua/action/.github/actions/publish-core@main
         with:
-          module: banking-acquirer
-          version: ${{ github.sha }}
-          in_pat: ${{ secrets.BANK_AQR_PAT }}
+          module: <module>
+          in_pat: ${{ secrets.CORE_PAT }}
           ex_pat: ${{ secrets.STARTER_PAT }}
     runs-on: ubuntu-latest

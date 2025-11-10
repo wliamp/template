@@ -1,0 +1,20 @@
+description: |
+inputs:
+  scope:
+    required: true
+    description: "Business domain scope"
+  service:
+    required: true
+    description: "A Service belong to Business Domain scope"
+  alias:
+    required: true
+    description: "'service' alias"
+  tld:
+    required: true
+    description: |
+  org:
+    required: true
+    description: |
+runs:
+  using: "node20"
+  main: "dist/index.js"

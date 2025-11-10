@@ -1,0 +1,47 @@
+name: Initial Scope
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Enter Scope name"
+        required: true
+      alias:
+        description: "Enter Scope alias"
+        required: true
+jobs:
+  init-scope:
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/check
+        with:
+          key: ${{ github.event.inputs.scope }}
+          value: ${{ github.event.inputs.alias }}
+          map: scopes
+        id: check
+      - uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.PAT }}
+          repository: ${{ vars.RELEASE_REPO }}
+          event-type: ${{ vars.INIT_SCOPE_EVENT }}
+          client-payload: |
+            {
+              "scope": "${{ steps.check.outputs.key }}",
+              "alias": "${{ steps.check.outputs.value }}"
+            }
+      - uses: ./.github/actions/init-scope
+        with:
+          scope: ${{ steps.check.outputs.key }}
+          alias: ${{ steps.check.outputs.value }}
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SSH }}
+      - uses: EndBug/add-and-commit@v9.1.4
+        with:
+          author_name: "initial[bot]"
+          author_email: "initial[bot]@users.noreply.github.com"
+          add: ./.github/workflows/init-service.yml
+          message: "chore: update 'scope' options for workflow 'init-service'"
+          push: true
+    runs-on: ubuntu-latest

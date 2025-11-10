@@ -13,8 +13,8 @@ java {
     toolchain {
         languageVersion = of(25)
     }
-    sourceCompatibility = VERSION_17
     targetCompatibility = VERSION_17
+    sourceCompatibility = VERSION_17
 }
 
 configurations {
@@ -35,21 +35,26 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.starter)
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework:spring-context'
+    implementation libs.starter
     implementation 'io.projectreactor:reactor-core'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    compileOnly 'org.springframework.data:spring-data-commons'
+    compileOnly 'org.springframework:spring-context'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.springframework:spring-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
 }
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
+    javaLauncher.set javaToolchains.launcherFor {
+        languageVersion.set(of(17))
+    }
 }
 
 

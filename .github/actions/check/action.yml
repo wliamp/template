@@ -1,0 +1,14 @@
+description: |
+inputs:
+  key:
+    required: true
+    description: |
+  value:
+    required: true
+    description: |
+  map:
+    required: true
+    description: |
+runs:
+  using: "node20"
+  main: "dist/index.js"

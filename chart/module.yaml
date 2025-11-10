@@ -1,0 +1,32 @@
+replicaCount: 2
+revisionHistoryLimit: 3
+image:
+  repository: docker.io/hamsaqua/<module>
+  tag: latest
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+service:
+  type: ClusterIP
+  port: 8080
+env: {}
+secrets: {}
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+probes:
+  path: /
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  liveness:
+    initialDelaySeconds: 15
+    periodSeconds: 20
+serviceAccount:
+  name: default
+nodeSelector: {}
+affinity: {}
+tolerations: []

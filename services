@@ -1,0 +1,7 @@
+acquirer=aqr
+card-network=cnet
+gateway=gtw
+issuer=iss
+merchant=mech
+payment=pay
+processor=proc

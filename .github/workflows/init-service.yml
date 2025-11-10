@@ -1,0 +1,100 @@
+name: Initial Service
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Select Scope"
+        required: true
+        type: choice
+        default: banking
+        options:
+          - banking
+          - clearing-settlement
+          - compliance-regulatory
+          - fraud-risk
+          - payment
+          - shopping
+      service:
+        description: "Enter Service name"
+        required: true
+      alias:
+        description: "Enter Service alias"
+        required: true
+jobs:
+  init-service:
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/check
+        with:
+          key: ${{ github.event.inputs.service }}
+          value: ${{ github.event.inputs.alias }}
+          map: services
+        id: check
+      - uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
+          repository: ${{ vars.RELEASE_REPO }}
+          event-type: ${{ vars.INIT_SERVICE_EVENT }}
+          client-payload: |
+            {
+              "scope": "${{ github.event.inputs.scope }}",
+              "service": "${{ steps.check.outputs.key }}",
+              "alias": "${{ steps.check.outputs.value }}"
+            }
+      - uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.SUPPORT_PAT }}
+          repository: ${{ vars.SUPPORT_REPO }}
+          event-type: ${{ vars.INIT_SERVICE_EVENT }}
+          client-payload: |
+            {
+              "scope": "${{ github.event.inputs.scope }}",
+              "service": "${{ steps.check.outputs.key }}"
+            }
+      - uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.DEPLOY_PAT }}
+          repository: ${{ vars.DEPLOY_REPO }}
+          event-type: ${{ vars.INIT_SERVICE_EVENT }}
+          client-payload: |
+            {
+              "scope": "${{ github.event.inputs.scope }}",
+              "service": "${{ steps.check.outputs.key }}"
+            }
+      - uses: cli/gh-actions@v2
+        with:
+          args: |
+            repo create \
+              ${{ vars.ORG }}/${{ github.event.inputs.scope }}-${{ steps.check.outputs.key }} \
+              --private=false \
+              --confirm
+        env:
+          GH_TOKEN: ${{ secrets.CORE_PAT }}
+      - uses: ./.github/actions/ruleset
+        with:
+          org: ${{ vars.ORG }}
+          repo: ${{ github.event.inputs.scope }}-${{ steps.check.outputs.key }}
+          pat: ${{ secrets.CORE_PAT }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.ORG }}/${{ github.event.inputs.scope }}-${{ steps.check.outputs.key }}
+          token: ${{ secrets.CORE_PAT }}
+          path: ${{ runner.temp }}/core
+      - uses: ./.github/actions/create-core
+        with:
+          scope: ${{ github.event.inputs.scope }}
+          service: ${{ steps.check.outputs.key }}
+          value: ${{ steps.check.outputs.value }}
+          tld: ${{ vars.TLD }}
+          org: ${{ vars.ORG }}
+      - uses: EndBug/add-and-commit@v9
+        with:
+          author_name: "initial[bot]"
+          author_email: "initial[bot]@users.noreply.github.com"
+          message: "feat: initial commit"
+          add: "-A"
+          push: true
+          cwd: ${{ runner.temp }}/core
+    runs-on: ubuntu-latest

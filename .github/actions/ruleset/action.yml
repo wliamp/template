@@ -1,0 +1,14 @@
+description: |
+inputs:
+  org:
+    description: 'Organization name'
+    required: true
+  repo:
+    description: 'Target repository name'
+    required: true
+  pat:
+    description: 'PAT with repo admin rights'
+    required: true
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
