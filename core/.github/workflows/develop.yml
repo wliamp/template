@@ -5,10 +5,8 @@ on:
 jobs:
   develop:
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - uses: hamsaqua/action/.github/actions/develop-core@main
+      - uses: actions/checkout@v5
+      - uses: ${{ vars.ACTION_REPO }}/.github/actions/${{ vars.DEVELOP_ACTION }}@main
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.STARTER_PAT }}

@@ -5,12 +5,10 @@ on:
 jobs:
   publish:
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - uses: hamsaqua/action/.github/actions/publish-core@main
+      - uses: actions/checkout@v5
+      - uses: ${{ vars.ACTION_REPO }}/.github/actions/${{ vars.PUBLISH_ACTION }}@main
         with:
           module: <module>
-          in_pat: ${{ secrets.CORE_PAT }}
-          ex_pat: ${{ secrets.STARTER_PAT }}
+          core_pat: ${{ secrets.CORE_PAT }}
+          starter_pat: ${{ secrets.STARTER_PAT }}
     runs-on: ubuntu-latest

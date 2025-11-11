@@ -1,11 +1,16 @@
 description: |
+  Update `.github/workflows/init-service.yml` based on the list of scopes.
+  This action:
+  - Reads the `scope` input for context.
+  - Loads all scopes from the `scopes` file (format: key=value).
+  - Extracts scope names and determines the default scope.
+  - Loads and parses `init-service.yml` as YAML.
+  - Updates the `SCOPE` input’s `default` and `options` fields.
+  - Writes the updated YAML back to the workflow file.
 inputs:
   scope:
+    description: "Business Domain scope"
     required: true
-    description: "Business domain scope"
-  alias:
-    required: true
-    description: "'scope' alias"
 runs:
-  using: "node20"
-  main: "dist/index.js"
+  using: node20
+  main: dist/index.js

@@ -1,14 +1,22 @@
 description: |
+  Apply repository rulesets to a target GitHub repository using the API.
+  This action:
+  - Reads `pat`, `org`, and `repo` inputs.
+  - Loads all rules from `ruleset.json`.
+  - Iterates through each ruleset definition.
+  - Sends a POST request to the GitHub REST API to create each ruleset.
+  - Groups logs per ruleset for better visibility.
+  - Fails the action if any API call returns an error.
 inputs:
   org:
-    description: 'Organization name'
+    description: "Organization name"
     required: true
   repo:
-    description: 'Target repository name'
+    description: "Target repository name"
     required: true
   pat:
-    description: 'PAT with repo admin rights'
+    description: "PAT with repo admin rights"
     required: true
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: node20
+  main: dist/index.js

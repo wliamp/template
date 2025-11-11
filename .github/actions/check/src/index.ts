@@ -13,44 +13,32 @@ function writeLines(file: string, lines: string[]) {
 
 async function run() {
   try {
-    const key = core.getInput("key", { required: true });
-    const value = core.getInput("value", { required: true });
-    const map = core.getInput("map", { required: true });
-
-    const mapFile = path.resolve(map);
-
+    const KEY = core.getInput("key", { required: true });
+    const VALUE = core.getInput("value") || '';
+    const MAP = core.getInput("map", { required: true });
+    const mapFile = path.resolve(MAP);
     let mapLines = readLines(mapFile);
-
     const mapObj: Record<string, string> = {};
     for (const line of mapLines) {
       const [k, v] = line.split("=");
       if (k && v) mapObj[k] = v;
     }
-
     const existingEntry = Object.entries(mapObj).find(
-      ([k, v]) => k === key || v === value
+      ([k, v]) => k === KEY || v === VALUE
     );
-
     if (existingEntry) {
       const [existingKey, existingValue] = existingEntry;
-      core.info(`⚠️ Entry already exists: ${existingKey}=${existingValue}`);
       core.setOutput("key", existingKey);
       core.setOutput("value", existingValue);
       return;
     }
-
-    mapObj[key] = value;
-
+    mapObj[KEY] = VALUE;
     const sortedLines = Object.keys(mapObj)
       .sort()
       .map(k => `${k}=${mapObj[k]}`);
-
     writeLines(mapFile, sortedLines);
-
-    core.info(`✅ Added entry: ${key}=${value}`);
-    core.setOutput("key", key);
-    core.setOutput("value", value);
-
+    core.setOutput("key", KEY);
+    core.setOutput("value", VALUE);
   } catch (error: any) {
     core.setFailed(error.message);
   }

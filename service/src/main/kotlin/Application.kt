@@ -1,4 +1,4 @@
-package org.hamsaqua.<alias1>.<alias2>
+package com.hamsaqua.<alias1>.<alias2>
 
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
