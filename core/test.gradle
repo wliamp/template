@@ -1,0 +1,22 @@
+import static org.gradle.jvm.toolchain.JavaLanguageVersion.of
+
+plugins {
+    id "jacoco"
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+    javaLauncher.set javaToolchains.launcherFor {
+        languageVersion.set(of(17))
+    }
+}
+
+tasks.named("jacocoTestReport", JacocoReport) {
+    dependsOn tasks.test
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(true)
+    }
+}

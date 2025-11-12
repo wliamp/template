@@ -6,9 +6,14 @@ jobs:
   publish:
     steps:
       - uses: actions/checkout@v5
-      - uses: ${{ vars.ACTION_REPO }}/.github/actions/${{ vars.PUBLISH_ACTION }}@main
+      - uses: ${{ vars.REPO_ACTION }}/.github/actions/${{ vars.ACTION_PUBLISH }}@main
         with:
+          group: ${{ vars.GROUP }}
           module: <module>
-          core_pat: ${{ secrets.CORE_PAT }}
-          starter_pat: ${{ secrets.STARTER_PAT }}
+          org: ${{ vars.ORG_PUBLISH }}
+          desc: ${{ vars.DESCRIPTION }}
+          core_pat: ${{ secrets.PAT_CORE }}
+          bundle_pat: ${{ secrets.PAT_BUNDLE }}
+          repo: ${{ vars.REPO_BUNDLE }}
+          event: ${{ vars.EVENT_PUBLISH }}
     runs-on: ubuntu-latest

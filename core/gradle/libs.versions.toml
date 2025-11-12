@@ -1,5 +1,5 @@
 [versions]
-tag = '0.0.0'
+tag = "0.0.0"
 
 [libraries]
-starter = { module = 'com.hamsaqua:<module>-core', version.ref = 'tag' }
+bundle = { module = "internal.core:<module>", version.ref = "tag" }

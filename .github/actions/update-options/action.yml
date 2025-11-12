@@ -9,7 +9,7 @@ description: |
   - Writes the updated YAML back to the workflow file.
 inputs:
   scope:
-    description: "Business Domain scope"
+    description: "business domain scope"
     required: true
 runs:
   using: node20

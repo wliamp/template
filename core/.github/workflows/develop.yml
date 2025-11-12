@@ -6,8 +6,10 @@ jobs:
   develop:
     steps:
       - uses: actions/checkout@v5
-      - uses: ${{ vars.ACTION_REPO }}/.github/actions/${{ vars.DEVELOP_ACTION }}@main
+      - uses: ${{ vars.REPO_ACTION }}/.github/actions/${{ vars.ACTION_DEVELOP }}@main
         env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.STARTER_PAT }}
+          ACTOR: ${{ github.actor }}
+          ORG: ${{ vars.ORG_BUILD }}
+          REPO: ${{ vars.REPO_BUNDLE }}
+          TOKEN: ${{ secrets.PAT_BUNDLE }}
     runs-on: ubuntu-latest

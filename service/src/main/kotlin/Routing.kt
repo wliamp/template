@@ -1,4 +1,4 @@
-package com.hamsaqua.<alias1>.<alias2>
+package <module>
 
 import io.ktor.server.application.*
 import io.ktor.server.response.*

@@ -1,21 +1,26 @@
 import static java.lang.System.getenv
 
 plugins {
-    id 'maven-publish'
+    id "maven-publish"
 }
 
-group = 'com.hamsaqua'
-version = getenv("VERSION") ?: ""
+group = getenv("GROUP") ?: ""
+version = getenv("TAG") ?: ""
+def module = getenv("MODULE") ?: ""
+def org = getenv("ORG") ?: ""
+def desc = getenv("DESC") ?: ""
+def actor = getenv("ACTOR") ?: ""
+def token = getenv("TOKEN") ?: ""
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifactId = "<module>"
+            artifactId = module
             pom {
-                name.set("<module>")
-                description.set("Business Domain Core Logic")
-                url.set("https://github.com/hamsaqua/<module>")
+                name.set(module)
+                description.set(desc)
+                url.set("https://github.com/${org}/${module}")
             }
         }
     }
@@ -23,10 +28,10 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/hamsaqua/<module>")
+            url = uri("https://maven.pkg.github.com/${org}/${module}")
             credentials {
-                username = getenv("GITHUB_ACTOR") ?: ""
-                password = getenv("GITHUB_TOKEN") ?: ""
+                username = actor
+                password = token
             }
         }
     }

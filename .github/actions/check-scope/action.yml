@@ -10,15 +10,11 @@ description: |
   - Writes the updated lines back to the map file.
   - Outputs both `key` and `value` for downstream steps.
 inputs:
-  key:
-    description: "the key to lookup in the map file"
+  scope:
+    description: "business domain scope"
     required: true
-  value:
-    description: "the value associated with the key"
-    required: false
-    default: ""
-  map:
-    description: "path to the map file that stores key=value pairs"
+  pat:
+    description: "Template repository PAT"
     required: true
 runs:
   using: node20

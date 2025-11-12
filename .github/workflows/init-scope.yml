@@ -3,34 +3,29 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: "Enter Scope name"
-        required: true
-      alias:
-        description: "Enter Scope alias"
+        description: "Enter Scope Name"
         required: true
 jobs:
   init-scope:
     steps:
       - uses: actions/checkout@v5
-      - uses: ./.github/actions/check
+      - uses: ./.github/actions/check-scope
         with:
-          key: ${{ github.event.inputs.scope }}
-          value: ${{ github.event.inputs.alias }}
-          map: scopes
+          scope: ${{ github.event.inputs.scope }}
+          pat: ${{ secrets.PAT_TEMPLATE }}
         id: check
       - uses: peter-evans/repository-dispatch@v4
         with:
-          token: ${{ secrets.RELEASE_PAT }}
-          repository: ${{ vars.RELEASE_REPO }}
-          event-type: ${{ vars.INIT_SCOPE_EVENT }}
+          token: ${{ secrets.PAT_RELEASE }}
+          repository: ${{ vars.REPO_RELEASE }}
+          event-type: ${{ vars.EVENT_INIT_SCOPE }}
           client-payload: |
             {
-              "scope": "${{ steps.check.outputs.key }}"
+              "scope": "${{ steps.check.outputs.scope }}"
             }
-      - uses: ./.github/actions/init-scope
+      - uses: ./.github/actions/update-options
         with:
-          scope: ${{ steps.check.outputs.key }}
-          alias: ${{ steps.check.outputs.value }}
+          scope: ${{ steps.check.outputs.scope }}
       - uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH }}
@@ -41,5 +36,4 @@ jobs:
           add: |
             - ./.github/workflows/init-service.yml
           message: "chore: update 'scope' options for workflow 'init-service'"
-          push: true
     runs-on: ubuntu-latest

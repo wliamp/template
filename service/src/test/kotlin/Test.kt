@@ -1,4 +1,4 @@
-package com.hamsaqua.<alias1>.<alias2>
+package <module>
 
 import io.kotest.core.spec.style.Test
 import io.ktor.client.request.*

@@ -13,8 +13,14 @@ inputs:
   service:
     description: "the service belong to 'scope'"
     required: true
-  alias:
-    description: "'service' alias"
+  pat:
+    description: "Template repository PAT"
+    required: true
+  tld:
+    description: "top-level domain"
+    required: true
+  org:
+    description: "organization name"
     required: true
 runs:
   using: node20

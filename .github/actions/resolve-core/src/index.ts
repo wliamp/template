@@ -7,62 +7,70 @@ async function run() {
   try {
     const SCOPE = core.getInput('scope', { required: true });
     const SERVICE = core.getInput('service', { required: true });
-    const ALIAS = core.getInput('alias', { required: true });
-    const map = path.resolved("scopes");
-    process.chdir(path.join(process.env.RUNNER_TEMP, 'core'));
-    let SCOPE_ALIAS = '';
-    if (fs.existsSync(map)) {
-      const lines = fs.readFileSync(map, 'utf8').split(/\r?\n/);
-      for (const line of lines) {
-        const match = line.match(new RegExp(`^${SCOPE}=(.*)$`));
-        if (match) {
-          SCOPE_ALIAS = match[1].trim();
-          break;
-        }
-      }
+    const PAT = core.getInput("pat", { required: true });
+    const TLD = core.getInput("tld", { required: true });
+    const ORG = core.getInput("org", { required: true });
+    const octokit = github.getOctokit(PAT);
+    const { owner, repo } = github.context.repo;
+    const scopes = SCOPE.toUpperCase().replace(/-/g, "_");
+    let services: string[] = [];
+    try {
+      const resp = await octokit.rest.actions.getRepoVariable({
+        owner,
+        repo,
+        name: scopes
+      });
+      services = JSON.parse(resp.data.value);
+    } catch (err: any) {
+      if (err.status === 404) return;
+      else throw err;
     }
-    const moveDir = (src: string, dest: string) => {
-      if (src === dest) return;
-      if (!fs.existsSync(src)) return;
-      const parent = path.dirname(dest);
-      fs.mkdirSync(parent, { recursive: true });
-      if (fs.existsSync(dest)) {
-        for (const file of fs.readdirSync(src)) {
-          const from = path.join(src, file);
-          const to = path.join(dest, file);
-          fs.renameSync(from, to);
-        }
-        try { fs.rmdirSync(src); } catch { /* ignore */ }
-      } else {
-        fs.renameSync(src, dest);
-      }
-    };
-    const findDirs = (pattern: string) => glob.sync(pattern, { nodir: false, absolute: true });
-    if (SCOPE_ALIAS) {
-      for (const dir of findDirs(`**/src/**/com/hamsaqua/alias1`)) {
-        const parent = path.dirname(dir);
-        const newdir = path.join(parent, SCOPE_ALIAS);
-        moveDir(dir, newdir);
-      }
-      for (const dir of findDirs(`**/src/**/com/hamsaqua/${SCOPE_ALIAS}/alias2`)) {
-        const parent = path.dirname(dir);
-        const newdir = path.join(parent, ALIAS);
-        moveDir(dir, newdir);
-      }
-      for (const dir of findDirs(`**/src/**/com/hamsaqua/alias1/alias2`)) {
-        const alias1Dir = path.dirname(dir);
-        const targetAlias1Dir = alias1Dir.replace(/alias1$/, SCOPE_ALIAS);
-        const targetAlias2Dir = path.join(targetAlias1Dir, ALIAS);
-        moveDir(alias1Dir, targetAlias1Dir);
-        const alias2Dir = path.join(targetAlias1Dir, 'alias2');
-        if (fs.existsSync(alias2Dir)) moveDir(alias2Dir, targetAlias2Dir);
-      }
+    if (services.includes(SERVICE)) return;
+    services.push(SERVICE);
+    services.sort();
+    await octokit.rest.actions.createOrUpdateRepoVariable({
+      owner,
+      repo,
+      name: scopes,
+      value: JSON.stringify(services)
+    });
+    const corePath = path.resolve("core");
+    const tempCorePath = path.join(process.env.RUNNER_TEMP || "/tmp", "core");
+    fs.cpSync(corePath, tempCorePath, { recursive: true });
+    process.chdir(tempCorePath);
+    const packageName = `${TLD}.${ORG}.${SCOPE.replace(/-/g, ".")}.${SERVICE.replace(/-/g, ".")}`;
+    const packagePath = packageName.replace(/\./g, path.sep);
+    const mainDir = path.join(tempCorePath, "src/main/java", packagePath);
+    const testDir = path.join(tempCorePath, "src/test/java", packagePath);
+    fs.mkdirSync(mainDir, { recursive: true });
+    fs.mkdirSync(testDir, { recursive: true });
+    const mainJava = `
+package ${packageName};
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("${SCOPE}-${SERVICE} Hello World");
     }
-    const filePatterns = ['**/*.java', '**/*.gradle', '**/*.yml', '**/*.toml'];
+}
+`;
+    const testJava = `
+package ${packageName};
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class Test {
+    @Test
+    void test() {
+        assertTrue(true, "${SCOPE}-${SERVICE} Sample Test");
+    }
+}
+`;
+    fs.writeFileSync(path.join(mainDir, "Main.java"), mainJava, "utf8");
+    fs.writeFileSync(path.join(testDir, "Test.java"), testJava, "utf8");
+    const filePatterns = ['**/*.gradle', '**/*.yml', '**/*.toml'];
     const replacements = {
       module: `${SCOPE}-${SERVICE}`,
-      alias1: SCOPE_ALIAS,
-      alias2: ALIAS,
     };
     for (const pattern of filePatterns) {
       for (const file of glob.sync(pattern, { absolute: true })) {
