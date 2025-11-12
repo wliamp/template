@@ -9,7 +9,7 @@ jobs:
       - uses: ${{ vars.REPO_ACTION }}/.github/actions/${{ vars.ACTION_DEVELOP }}@main
         env:
           ACTOR: ${{ github.actor }}
-          ORG: ${{ vars.ORG_BUILD }}
+          ORG: ${{ vars.ORG }}
           REPO: ${{ vars.REPO_BUNDLE }}
           TOKEN: ${{ secrets.PAT_BUNDLE }}
     runs-on: ubuntu-latest

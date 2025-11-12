@@ -18,7 +18,7 @@ on:
         description: "Enter Service Name"
         required: true
 jobs:
-  init-service:
+  ex-repos:
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/check-service
@@ -56,20 +56,57 @@ jobs:
               --confirm
         env:
           GH_TOKEN: ${{ secrets.SSH }}
-      - uses: ./.github/actions/ruleset
+    outputs:
+      scope: ${{ steps.check.outputs.scope }}
+      service: ${{ steps.check.outputs.service }}
+    runs-on: ubuntu-latest
+  approve:
+    permissions:
+      issues: write
+    timeout-minutes: 60
+    steps:
+      - uses: trstringer/manual-approval@v1
         with:
-          org: ${{ vars.ORG }}
-          repo: ${{ steps.check.outputs.scope }}-${{ steps.check.outputs.service }}
-          pat: ${{ secrets.PAT }}
+          secret: ${{ github.token }}
+          approvers: ${{ vars.APPROVERS }}
+          minimum-approvals: 1
+    needs: ex-repos
+    runs-on: ubuntu-latest
+  init-core:
+    steps:
       - uses: actions/checkout@v5
         with:
-          repository: ${{ vars.ORG }}/${{ steps.check.outputs.scope }}-${{ steps.check.outputs.service }}
-          token: ${{ secrets.PAT }}
+          sparse-checkout: |
+            ruleset.json
+            core
+      - uses: ./.github/actions/settings-core
+        with:
+          org: ${{ vars.ORG }}
+          repo: ${{ needs.ex-repos.outputs.scope }}-${{ needs.ex-repos.outputs.service }}
+          pat: ${{ secrets.PAT_TEMPLATE }}
+          topics: ${{ vars.TOPICS }}
+          desc: ${{ vars.DESC_TEMPLATE }}
+          vars: |
+            REPO_ACTION:${{ vars.REPO_ACTION }}
+            REPO_BUNDLE:${{ vars.REPO_BUNDLE }}
+            ACTION_DEVELOP:${{ vars.ACTION_DEVELOP }}
+            ACTION_PUBLISH:${{ vars.ACTION_PUBLISH }}
+            ORG:${{ vars.ORG }}
+            GROUP:${{ vars.GROUP }}
+            DESCRIPTION:${{ vars.DESC_CORE }}
+            EVENT_PUBLISH:${{ vars.EVENT_PUBLISH }}
+          secrets: |
+            PAT_CORE:${{ secrets.PAT_CORE }}
+            PAT_BUNDLE:${{ secrets.PAT_BUNDLE }}
+      - uses: actions/checkout@v5
+        with:
+          repository: ${{ vars.ORG }}/${{ needs.ex-repos.outputs.scope }}-${{ needs.ex-repos.outputs.service }}
+          token: ${{ secrets.PAT_CORE }}
           path: ${{ runner.temp }}/core
       - uses: ./.github/actions/resolve-core
         with:
-          scope: ${{ steps.check.outputs.scope }}
-          service: ${{ steps.check.outputs.service }}
+          scope: ${{ needs.ex-repos.outputs.scope }}
+          service: ${{ needs.ex-repos.outputs.service }}
           tld: ${{ vars.TLD }}
           org: ${{ vars.ORD }}
       - uses: EndBug/add-and-commit@v9
@@ -80,4 +117,5 @@ jobs:
           add: "-A"
           tag_push: "--force"
           cwd: ${{ runner.temp }}/core
+    needs: [ ex-repos, approve ]
     runs-on: ubuntu-latest

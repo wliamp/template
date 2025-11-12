@@ -9,13 +9,25 @@ description: |
   - Fails the action if any API call returns an error.
 inputs:
   org:
-    description: "Organization name"
+    description: "organization name"
     required: true
   repo:
-    description: "Target repository name"
+    description: "target repository"
     required: true
   pat:
-    description: "PAT with repo admin rights"
+    description: "target repository PAT"
+    required: true
+  vars:
+    description: "target repository variables"
+    required: true
+  secrets:
+    description: "target repository secrets"
+    required: true
+  topics:
+    description: "target repository topics"
+    required: true
+  desc:
+    description: "target repository description"
     required: true
 runs:
   using: node20

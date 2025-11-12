@@ -8,12 +8,12 @@ jobs:
       - uses: actions/checkout@v5
       - uses: ${{ vars.REPO_ACTION }}/.github/actions/${{ vars.ACTION_PUBLISH }}@main
         with:
-          group: ${{ vars.GROUP }}
           module: <module>
-          org: ${{ vars.ORG_PUBLISH }}
+          group: ${{ vars.GROUP }}
+          org: ${{ vars.ORG }}
           desc: ${{ vars.DESCRIPTION }}
-          core_pat: ${{ secrets.PAT_CORE }}
-          bundle_pat: ${{ secrets.PAT_BUNDLE }}
           repo: ${{ vars.REPO_BUNDLE }}
           event: ${{ vars.EVENT_PUBLISH }}
+          core_pat: ${{ secrets.PAT_CORE }}
+          bundle_pat: ${{ secrets.PAT_BUNDLE }}
     runs-on: ubuntu-latest
