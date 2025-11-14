@@ -47,13 +47,11 @@ jobs:
               "scope": "${{ steps.check.outputs.scope }}",
               "service": "${{ steps.check.outputs.service }}"
             }
-      - uses: cli/gh-actions@v2
-        with:
-          args: |
-            repo create \
-              ${{ vars.ORG }}/${{ steps.check.outputs.scope }}-${{ steps.check.outputs.service }} \
-              --private=false \
-              --confirm
+      - run: |
+          gh repo create \
+            "${{ vars.ORG }}/${{ steps.check.outputs.scope }}-${{ steps.check.outputs.service }}" \
+            --public \
+            --confirm
         env:
           GH_TOKEN: ${{ secrets.SSH }}
     outputs:
@@ -109,6 +107,10 @@ jobs:
           service: ${{ needs.ex-repos.outputs.service }}
           tld: ${{ vars.TLD }}
           org: ${{ vars.ORD }}
+          pat: ${{ secrets.PAT_TEMPLATE }}
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_CORE }}
       - uses: EndBug/add-and-commit@v9
         with:
           author_name: initial[bot]

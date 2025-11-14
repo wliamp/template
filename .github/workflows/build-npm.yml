@@ -1,0 +1,51 @@
+name: Build NPM
+on:
+  push:
+    branches: [ main ]
+    paths: [ ".github/actions/**" ]
+jobs:
+  detect:
+    steps:
+      - uses: actions/checkout@v5
+      - uses: tj-actions/changed-files@v47
+        with:
+          files: .github/actions/**
+        id: changed
+      - run: |
+          changes=""
+          IFS=$'\n'
+          for file in ${{ steps.changed.outputs.all_changed_files }}; do
+            if [[ "$file" =~ ^\.github/actions/([^/]+)/ ]]; then
+              action="${BASH_REMATCH[1]}"
+              changes="$changes $action"
+            fi
+          done
+          actions=$(printf '[%s]' "$(for dir in $changes; do echo "{\"action\":\"$dir\"},"; done | sed 's/,$//')")
+          echo "matrix=$actions >> $GITHUB_OUTPUT
+        id: matrix
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    runs-on: ubuntu-latest
+  build:
+    steps:
+      - uses: actions/checkout@v5
+      - run: |
+          npm ci
+          npm run build
+        working-directory: .github/actions/${{ matrix.action }}
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_TEMPLATE }}
+      - uses: EndBug/add-and-commit@v9.1.4
+        with:
+          author_name: build[bot]
+          author_email: build[bot]@users.noreply.github.com
+          add: |
+            - ./.github/actions/
+          message: "chore: actions TS npm rebuild"
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.detect.outputs.matrix) }}
+    needs: detect
+    runs-on: ubuntu-latest

@@ -7,7 +7,7 @@ import io.ktor.server.testing.*
 import kotlin.test.*
 
 @Test
-fun testRoot() = testApplication {
+fun test() = testApplication {
     application {
         module()
     }

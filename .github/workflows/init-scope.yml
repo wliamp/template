@@ -28,7 +28,7 @@ jobs:
           scope: ${{ steps.check.outputs.scope }}
       - uses: webfactory/ssh-agent@v0.9.1
         with:
-          ssh-private-key: ${{ secrets.SSH }}
+          ssh-private-key: ${{ secrets.SSH_TEMPLATE }}
       - uses: EndBug/add-and-commit@v9.1.4
         with:
           author_name: initial[bot]
