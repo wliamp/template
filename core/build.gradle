@@ -9,9 +9,9 @@ plugins {
 }
 
 def actor = getenv("ACTOR") ?: findProperty("actor")
-def org = getenv("ORG") ?: findProperty("org.bundle")
-def repo = getenv("REPO") ?: findProperty("repo.bundle.name")
-def token = getenv("TOKEN") ?: findProperty("repo.bundle.pat")
+def org = getenv("ORG") ?: findProperty("org.artifact")
+def repo = getenv("REPO") ?: findProperty("repo.artifact")
+def token = getenv("TOKEN") ?: findProperty("repo.artifact.pat")
 
 java {
     toolchain {
@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    implementation libs.bundle
+    implementation libs.artifact
     implementation "io.projectreactor:reactor-core"
     compileOnly "org.springframework.data:spring-data-commons"
     compileOnly "org.springframework:spring-context"

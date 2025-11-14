@@ -2,4 +2,4 @@
 tag = "0.0.0"
 
 [libraries]
-bundle = { module = "internal.core:<module>", version.ref = "tag" }
+artifact = { module = "internal.core:<module>", version.ref = "tag" }
