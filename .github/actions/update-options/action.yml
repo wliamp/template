@@ -1,12 +1,4 @@
-description: |
-  Update `.github/workflows/init-service.yml` based on the list of scopes.
-  This action:
-  - Reads the `scope` input for context.
-  - Loads all scopes from the `scopes` file (format: key=value).
-  - Extracts scope names and determines the default scope.
-  - Loads and parses `init-service.yml` as YAML.
-  - Updates the `SCOPE` input’s `default` and `options` fields.
-  - Writes the updated YAML back to the workflow file.
+description: "Updates the init-service workflow to include the new scope in its selectable options."
 inputs:
   scope:
     description: "business domain scope"

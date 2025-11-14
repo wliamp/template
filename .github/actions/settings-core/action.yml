@@ -1,12 +1,4 @@
-description: |
-  Apply repository rulesets to a target GitHub repository using the API.
-  This action:
-  - Reads `pat`, `org`, and `repo` inputs.
-  - Loads all rules from `ruleset.json`.
-  - Iterates through each ruleset definition.
-  - Sends a POST request to the GitHub REST API to create each ruleset.
-  - Groups logs per ruleset for better visibility.
-  - Fails the action if any API call returns an error.
+description: "Applies repository rulesets and configures variables, secrets, description, and topics."
 inputs:
   org:
     description: "organization name"

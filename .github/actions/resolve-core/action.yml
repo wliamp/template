@@ -1,11 +1,4 @@
-description: |
-  Adjust project directories and files based on scope–alias mappings.
-  This action:
-  - Reads `scope`, `service`, and `alias` inputs.
-  - Looks up the corresponding scope alias from the `scopes` file.
-  - Moves source directories to match the resolved scope and alias structure.
-  - Replaces placeholder tags (`<module>`, `<alias1>`, `<alias2>`) in source and config files.
-  - Updates `.java`, `.gradle`, `.yml`, and `.toml` files accordingly.
+description: "Generates a new Spring Boot module for the given scope and service, and updates the corresponding repo variable."
 inputs:
   scope:
     description: "business domain scope"

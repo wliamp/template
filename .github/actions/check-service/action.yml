@@ -1,14 +1,4 @@
-description: |
-  Manage a simple key=value map file.
-  This action performs the following steps:
-  - Reads a text file (map) containing lines in the format `key=value`.
-  - Loads all existing entries into memory as an object.
-  - Checks if the given key or value already exists:
-    - If found, returns the existing pair immediately without modifying the file.
-    - If not found, appends the new `key=value` pair.
-  - Sorts all entries by key alphabetically.
-  - Writes the updated lines back to the map file.
-  - Outputs both `key` and `value` for downstream steps.
+description: "Ensures the given service is registered under the specified scope in the repo variable, creating or updating the list as needed."
 inputs:
   scope:
     description: "business domain scope"
